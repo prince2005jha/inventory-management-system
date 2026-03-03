@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Calendar</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- FullCalendar CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+        .navbar-custom {
+            background-color: #2c3e50;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .navbar-custom .nav-link {
+            color: #ecf0f1 !important;
+            margin-right: 10px;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #3498db !important;
+        }
+        .container-main {
+            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.1);
+            margin-bottom: 30px;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .modal-content {
+            border-radius: 8px;
+        }
+        .event-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .event-item {
+            background: white;
+            border-left: 4px solid #3498db;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        }
+        .event-item:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,.15);
+        }
+        .event-item button {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .event-item button:hover {
+            background-color: #c0392b;
+        }
+        .fc {
+            font-family: 'Nunito', sans-serif;
+        }
+        .fc .fc-button-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .fc .fc-button-primary:hover {
+            background-color: #2980b9;
+        }
+        .fc .fc-button-primary:not(:disabled).fc-button-active {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html" style="color: #3498db; font-weight: bold;">📦 Inventory System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Inventory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="analytics.html">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="calendar.html">Calendar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="chatbot.html">Chatbot</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid container-main">
+        <div class="page-header">
+            <h1>📅 Inventory Calendar & Events</h1>
+            <p class="text-muted">Schedule and manage inventory events</p>
+        </div>
+
+        <div class="card">
+            <div class="mb-3">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#eventModal">
+                    <i class="fas fa-plus"></i> Add Event
+                </button>
+            </div>
+            <!-- calendar -->
+            <div id="calendar"></div>
+        </div>
+
+        <!-- Event List -->
+        <div class="card">
+            <h5>📋 Recent Events</h5>
+            <div class="event-list" id="eventListContainer">
+                <p class="text-muted text-center">No events added yet. Click "Add Event" to create one!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Events -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Add New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Event Title *</label>
+                            <input type="text" class="form-control" id="eventTitle" placeholder="e.g., Stock Reorder, Inventory Check" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDate" class="form-label">Event Date *</label>
+                            <input type="date" class="form-control" id="eventDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="3" placeholder="Event details..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="submitEventBtn">Add Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/jquery.min.js"></script>
+    
+    <!-- FullCalendar JS - Loaded AFTER jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+
+    <script>
+        let calendar; // Global calendar variable
+
+        function initializeCalendar() {
+            try {
+                console.log("📅 Initializing calendar...");
+                
+                // Check if FullCalendar is loaded
+                if (typeof FullCalendar === 'undefined') {
+                    console.warn("⏳ FullCalendar not ready. Attempting dynamic load from multiple CDNs...");
+                    if (!window._fcLoading) {
+                        window._fcLoading = true;
+                        const cdns = [
+                            'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js',
+                            'https://unpkg.com/fullcalendar@5.10.1/main.min.js',
+                            'https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'
+                        ];
+                        let idx = 0;
+                        function tryLoad() {
+                            if (idx >= cdns.length) {
+                                console.error('❌ All FullCalendar CDN loads failed');
+                                alert('Failed to load calendar library from CDN. Check your network or try again.');
+                                return;
+                            }
+                            const url = cdns[idx++];
+                            console.log('Attempting FullCalendar load from', url);
+                            const s = document.createElement('script');
+                            s.src = url;
+                            s.defer = true;
+                            s.onload = function() {
+                                console.log('✅ FullCalendar loaded from', url);
+                                try {
+                                    // Small delay to ensure script initializes globals
+                                    setTimeout(initializeCalendar, 50);
+                                } catch (e) {
+                                    console.error('Error calling initializeCalendar after load', e);
+                                }
+                            };
+                            s.onerror = function() {
+                                console.warn('Failed to load FullCalendar from', url);
+                                tryLoad();
+                            };
+                            document.head.appendChild(s);
+                        }
+                        tryLoad();
+                    }
+                    return;
+                }
+                
+                let calendarEl = document.getElementById('calendar');
+                if(!calendarEl) {
+                    console.error("❌ Calendar element not found!");
+                    return;
+                }
+
+                // If a calendar already exists, destroy it to avoid duplicates
+                if (calendar) {
+                    try {
+                        calendar.destroy();
+                        console.log('ℹ️ Previous calendar instance destroyed');
+                    } catch (e) {
+                        console.warn('Could not destroy previous calendar instance', e);
+                    }
+                    calendar = null;
+                }
+
+                // Clear any leftover markup in the calendar container
+                calendarEl.innerHTML = '';
+            
+                // Load saved events from localStorage
+                let savedEvents = [];
+                const storedEvents = localStorage.getItem('calendarEvents');
+                if(storedEvents) {
+                    try {
+                        savedEvents = JSON.parse(storedEvents);
+                        console.log("✅ Loaded events from localStorage:", savedEvents);
+                    } catch(e) {
+                        console.error("Error parsing stored events:", e);
+                    }
+                }
+            
+                // Initialize FullCalendar
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    themeSystem: 'bootstrap5',
+                    editable: false,
+                    events: savedEvents,
+                    eventClick: function(info) {
+                        showEventDetails(info.event);
+                    },
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek'
+                    }
+                });
+            
+                calendar.render();
+                console.log("✅ Calendar rendered successfully");
+                
+                updateEventList();
+            
+                // Handle Add Event button click - attach only once
+                let submitBtn = document.getElementById('submitEventBtn');
+                if(submitBtn) {
+                    if (!submitBtn.dataset.listenerAttached) {
+                        submitBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            console.log("🖱️ Submit button clicked");
+                            addEvent();
+                        });
+                        submitBtn.dataset.listenerAttached = '1';
+                        console.log("✅ Submit button listener attached");
+                    } else {
+                        console.log("ℹ️ Submit button listener already attached");
+                    }
+                } else {
+                    console.error("❌ Submit button not found!");
+                }
+
+                console.log("✅ Calendar initialization complete");
+            } catch(e) {
+                console.error("❌ Error initializing calendar:", e);
+                alert("Error loading calendar: " + e.message);
+            }
+        }
+
+        // Start calendar initialization when DOM is ready
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("📄 DOM loaded, initializing calendar...");
+            initializeCalendar();
+        });
+
+        function addEvent() {
+            try {
+                console.log("🖱️ addEvent() function called");
+                
+                let title = document.getElementById('eventTitle').value.trim();
+                let date = document.getElementById('eventDate').value;
+                let description = document.getElementById('eventDescription').value.trim();
+
+                console.log("📝 Form values - Title:", title, "Date:", date, "Description:", description);
+
+                if (!title || !date) {
+                    alert('⚠️ Please fill in Event Title and Date!');
+                    console.warn("Missing required fields");
+                    return;
+                }
+
+                let newEvent = {
+                    id: Date.now().toString(),
+                    title: title,
+                    start: date,
+                    description: description || 'No description',
+                    color: '#3498db',
+                    extendedProps: {
+                        description: description || 'No description'
+                    }
+                };
+
+                console.log("📅 New event object:", newEvent);
+
+                // Add to calendar
+                if(calendar && calendar.addEvent) {
+                    calendar.addEvent(newEvent);
+                    console.log('✅ Event added to FullCalendar');
+                } else {
+                    console.error('❌ Calendar object not available');
+                }
+                
+                // Save to localStorage
+                let savedEvents = [];
+                try {
+                    const stored = localStorage.getItem('calendarEvents');
+                    if(stored) {
+                        savedEvents = JSON.parse(stored);
+                    }
+                } catch(e) {
+                    console.warn('Could not parse existing events:', e);
+                    savedEvents = [];
+                }
+                
+                savedEvents.push(newEvent);
+                localStorage.setItem('calendarEvents', JSON.stringify(savedEvents));
+                console.log('✅ Event saved to localStorage. Total events:', savedEvents.length);
+
+                // Clear form
+                document.getElementById('eventForm').reset();
+                console.log('✅ Form cleared');
+                
+                // Close modal properly
+                let modal = document.getElementById('eventModal');
+                if(modal) {
+                    let modalInstance = bootstrap.Modal.getInstance(modal);
+                    if(modalInstance) {
+                        modalInstance.hide();
+                    }
+                    // Ensure backdrop is removed
+                    setTimeout(() => {
+                        document.body.classList.remove('modal-open');
+                        let backdrop = document.querySelector('.modal-backdrop');
+                        if(backdrop) backdrop.remove();
+                    }, 100);
+                    console.log('✅ Modal closed');
+                }
+                
+                // Update event list
+                updateEventList();
+                
+                alert('✅ Event added successfully!');
+            } catch(e) {
+                console.error('❌ Error adding event:', e);
+                console.error('Stack:', e.stack);
+                alert('Error adding event: ' + e.message);
+            }
+        }
+
+        function showEventDetails(event) {
+            const description = event.extendedProps.description || 'No description';
+            alert(`Event: ${event.title}\nDate: ${event.start.toDateString()}\nDescription: ${description}`);
+        }
+
+        function updateEventList() {
+            let savedEvents = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+            let container = document.getElementById('eventListContainer');
+
+            if(savedEvents.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">No events added yet. Click "Add Event" to create one!</p>';
+                return;
+            }
+
+            let html = '';
+            savedEvents.forEach((event, index) => {
+                const eventDate = new Date(event.start).toLocaleDateString();
+                html += `
+                    <div class="event-item">
+                        <div>
+                            <strong>${event.title}</strong><br>
+                            <small class="text-muted">${eventDate}</small>
+                        </div>
+                        <button onclick="deleteEvent('${event.id}', ${index})" class="btn btn-sm btn-danger">Delete</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function deleteEvent(eventId, index) {
+            if(confirm('Are you sure you want to delete this event?')) {
+                let savedEvents = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+                savedEvents.splice(index, 1);
+                localStorage.setItem('calendarEvents', JSON.stringify(savedEvents));
+
+                // Remove from calendar
+                calendar.getEventById(eventId)?.remove();
+                
+                updateEventList();
+                console.log('✅ Event deleted');
+            }
+        }
+    </script>
+</body>
+</html>

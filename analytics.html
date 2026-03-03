@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #ededec, #3da181, #257d68);
+            color: white;
+            font-family: 'Nunito', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        .btn-back {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            transition: 0.3s ease;
+        }
+        .btn-back:hover {
+            background-color: #bb3838;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container text-center">
+        <a href="index.html" class="btn btn-back">⬅ Back to Home</a>
+        <h1 class="mb-4">📊 Inventory Analytics</h1>
+
+        <div class="row g-4">
+            <!-- Bar Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <h4>Stock Levels</h4>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <h4>Sales Over Time</h4>
+                    <div class="chart-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="col-md-12">
+                <div class="card">
+                    <h4>Category Breakdown</h4>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Inventory Data (This can come from a database or API)
+        const inventoryData = {
+            stockLevels: [120, 95, 80, 150, 60],  // Stock quantities
+            salesData: [5000, 7000, 8000, 6000, 9000, 11000],  // Sales over time (months)
+            categories: {
+                Clothing: 60,
+                Footwear: 25,
+                Accessories: 15
+            }
+        };
+
+        // Bar Chart - Stock Levels
+        var ctx1 = document.getElementById('barChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Shirts', 'Pants', 'Jackets', 'Shoes', 'Accessories'], // Labels are fixed, based on product categories
+                datasets: [{
+                    label: 'Stock Quantity',
+                    data: inventoryData.stockLevels, // Dynamic stock levels
+                    backgroundColor: ['#ff4b5c', '#ff7eb3', '#ff9b85', '#ff6f91', '#ff758c'],
+                    borderRadius: 10
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Line Chart - Sales Over Time
+        var ctx2 = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], // Labels for months
+                datasets: [{
+                    label: 'Sales Revenue',
+                    data: inventoryData.salesData, // Dynamic sales data
+                    borderColor: '#ff758c',
+                    backgroundColor: 'rgba(255, 117, 140, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Pie Chart - Category Breakdown
+        var ctx3 = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(inventoryData.categories), // Dynamic categories
+                datasets: [{
+                    data: Object.values(inventoryData.categories), // Dynamic category data
+                    backgroundColor: ['#ff4b5c', '#ff758c', '#ff9b85']
+                }]
+            },
+            options: { responsive: true }
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+</html>

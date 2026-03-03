@@ -1,0 +1,41 @@
+{
+  "user": "u_d0174a2f",
+  "files": {
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\Nexttac\\inventory-management-system 2\\analytics.html": {
+      "status": 0,
+      "created_on": "2026-02-22T04:52:19.257Z",
+      "last_update": "2026-02-22T04:53:53.721Z"
+    },
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\Nexttac\\inventory-management-system 2\\backend\\src\\routes\\inventory.js": {
+      "status": 0,
+      "created_on": "2026-02-22T05:35:13.003Z",
+      "last_update": "2026-02-22T05:35:16.363Z"
+    },
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\Nexttac\\inventory-management-system 2\\backend\\docker-compose.yml": {
+      "status": 0,
+      "created_on": "2026-02-22T05:39:10.640Z",
+      "last_update": "2026-02-22T05:39:14.608Z"
+    },
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\Nexttac\\inventory-management-system 2\\backend\\.env.example": {
+      "status": 0,
+      "created_on": "2026-02-22T05:39:14.804Z",
+      "last_update": "2026-02-22T06:11:33.779Z"
+    },
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\Nexttac\\inventory-management-system 2\\backend\\src\\scripts\\createAdmin.js": {
+      "status": 0,
+      "created_on": "2026-02-22T06:11:34.053Z",
+      "last_update": "2026-03-03T09:40:32.068Z"
+    },
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\dev vscode\\Projects\\inventory-management-system 2\\index.html": {
+      "status": 0,
+      "created_on": "2026-03-03T09:40:31.996Z",
+      "last_update": "2026-03-03T10:18:18.703Z"
+    },
+    "c:\\Users\\jhap9\\OneDrive\\Desktop\\dev vscode\\Projects\\inventory-management-system 2\\.gitignore": {
+      "status": 1,
+      "created_on": "2026-03-03T10:18:19.118Z",
+      "last_update": "2026-03-03T10:18:19.347Z"
+    }
+  },
+  "last_heartbeat": "2026-03-03T10:19:01.174Z"
+}

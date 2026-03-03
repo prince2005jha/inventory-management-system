@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event List</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #42b883, #35495e);
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .event-item {
+            background: #35495e;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .event-item button {
+            background-color: #ff4b5c;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .event-item button:hover {
+            background-color: #ff758c;
+        }
+        .btn-back {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .btn-back:hover {
+            background-color: #ff4b5c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="btn btn-back">⬅ Back to Calendar</a>
+    <h1>📜 Event List</h1>
+
+    <div class="container">
+        <div id="eventList"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            loadEvents(); // Load events when the page loads
+        });
+        
+        // Function to load and display events
+        function loadEvents() {
+            let savedEvents = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+            let eventListEl = document.getElementById('eventList');
+        
+            eventListEl.innerHTML = ''; // Clear previous list
+        
+            if (savedEvents.length === 0) {
+                eventListEl.innerHTML = '<p class="text-center">No events added yet.</p>';
+                return;
+            }
+        
+            savedEvents.forEach(event => {
+                const eventItem = document.createElement('div');
+                eventItem.className = 'event-item';
+                eventItem.innerHTML = `
+                    <span>${event.title} - ${event.start}</span>
+                    <button class="btn btn-sm btn-danger" onclick="deleteEvent('${event.start}')">Delete</button>
+                `;
+                eventListEl.appendChild(eventItem);
+            });
+        }
+        
+        // Function to delete an event
+        function deleteEvent(eventDate) {
+            let events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+            events = events.filter(event => event.start !== eventDate);
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+        
+            loadEvents(); // Refresh event list after deletion
+        }
+        </script>
+
+</body>
+</html>

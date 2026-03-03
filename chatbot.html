@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Chatbot</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+        .navbar-custom {
+            background-color: #2c3e50;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .navbar-custom .nav-link {
+            color: #ecf0f1 !important;
+            margin-right: 10px;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #3498db !important;
+        }
+        .container-main {
+            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.1);
+            margin-bottom: 30px;
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+        .page-header {
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        .chat-box {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+        .message {
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+            display: block;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .user-message {
+            background-color: #3498db;
+            color: white;
+            text-align: right;
+            margin-left: 25%;
+            margin-right: 0;
+        }
+        .bot-message {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            margin-left: 0;
+            margin-right: 25%;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .input-area button {
+            padding: 12px 30px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .input-area button:hover {
+            background-color: #229954;
+        }
+        .chat-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        .chat-info h6 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .chat-info p {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html" style="color: #3498db; font-weight: bold;">📦 Inventory System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Inventory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="analytics.html">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="calendar.html">Calendar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="chatbot.html">Chatbot</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid container-main">
+        <div class="page-header">
+            <h1>🤖 Inventory Chatbot Assistant</h1>
+            <p class="text-muted">Ask me anything about your inventory</p>
+        </div>
+
+        <!-- Chat Info -->
+        <div class="chat-info">
+            <h6><i class="fas fa-info-circle"></i> Available Commands:</h6>
+            <p>• "What's the stock of [item name]?" - Check quantity</p>
+            <p>• "Price of [item name]?" - Get unit price</p>
+            <p>• "Total value of [item name]?" - Get total value</p>
+            <p>• "Low stock items" - See items with quantity < 50</p>
+            <p>• "All items" - List all inventory items</p>
+        </div>
+
+        <!-- Chat Box -->
+        <div class="chat-box" id="chatBox">
+            <div class="bot-message">
+                <strong>Bot:</strong> Welcome to Inventory Chatbot! Ask me anything about your inventory. Type your questions below. 👋
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <input type="text" id="messageInput" class="form-control" placeholder="Ask about items, stock, prices...">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            console.log("🤖 Chatbot page loaded");
+            console.log("✅ Manager available:", typeof window.inventoryManager !== 'undefined');
+            
+            // Event listener for Enter key
+            $('#messageInput').on('keypress', function(e) {
+                if(e.which === 13) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+
+        function sendMessage() {
+            try {
+                let input = $('#messageInput');
+                let message = input.val().trim();
+                
+                if(message === "") {
+                    console.log('Message is empty');
+                    return;
+                }
+
+                console.log("📤 User message:", message);
+                
+                // Display user message
+                addMessage('user', message);
+                input.val('');
+
+                // Get bot response with slight delay for better UX
+                setTimeout(() => {
+                    try {
+                        let botReply = getInventoryResponse(message);
+                        console.log("🤖 Bot reply:", botReply);
+                        addMessage('bot', botReply);
+                    } catch(e) {
+                        console.error("Error getting response:", e);
+                        addMessage('bot', '❌ Error: ' + e.message);
+                    }
+                }, 300);
+            } catch(e) {
+                console.error("Error sending message:", e);
+            }
+        }
+
+        function addMessage(sender, text) {
+            try {
+                let chatBox = document.getElementById('chatBox');
+                let messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+                
+                // Replace newlines with <br> for display
+                let displayText = text.replace(/\n/g, '<br>');
+                
+                if(sender === 'bot') {
+                    messageDiv.innerHTML = '<strong>🤖 Bot:</strong> ' + displayText;
+                } else {
+                    messageDiv.innerHTML = '<strong>👤 You:</strong> ' + displayText;
+                }
+                
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                console.log(`✅ Message added from ${sender}:`, text);
+            } catch(e) {
+                console.error("Error adding message:", e);
+            }
+        }
+
+        function getInventoryResponse(message) {
+            try {
+                // Check if manager exists - if not, wait and retry
+                if(!window.inventoryManager || typeof window.inventoryManager.getAll !== 'function') {
+                    console.warn("⚠️ Manager not ready yet, retrying...");
+                    // Give it one more chance to load
+                    setTimeout(() => {
+                        if(window.inventoryManager && typeof window.inventoryManager.getAll === 'function') {
+                            return getInventoryResponse(message);
+                        }
+                    }, 500);
+                    return '⏳ Loading inventory system... Please wait a moment and try again.';
+                }
+
+                const manager = window.inventoryManager;
+                message = message.toLowerCase().trim();
+                const items = manager.getAll();
+                
+                console.log("📊 Total items found:", items ? items.length : 0);
+
+                if(!items || items.length === 0) {
+                    return '⚠️ No items in inventory. Please add items first from the Inventory page.';
+                }
+
+                // Check for all items command
+                if(message.includes('all items') || message.includes('list all') || message.includes('show all') || message.includes('all')) {
+                    let response = '📋 All items in inventory:\n';
+                    items.forEach(item => {
+                        response += `• ${item.name}: ${item.quantity} units (RM ${item.unitPrice.toFixed(2)})\n`;
+                    });
+                    return response;
+                }
+
+                // Check for low stock command
+                if(message.includes('low stock') || message.includes('low quantity') || message.includes('restock') || message.includes('low')) {
+                    let lowStockItems = manager.getLowStockItems();
+                    if(lowStockItems.length === 0) {
+                        return '✅ All items have sufficient stock! No items below 50 units.';
+                    }
+                    let response = '⚠️ Low stock alert (< 50 units):\n';
+                    lowStockItems.forEach(item => {
+                        response += `• ${item.name}: ${item.quantity} units\n`;
+                    });
+                    return response;
+                }
+
+                // Search for specific item
+                for(let item of items) {
+                    const itemName = item.name.toLowerCase();
+                    
+                    if(message.includes(itemName)) {
+                        console.log("Found item:", item.name);
+                        
+                        // Stock quantity
+                        if(message.includes('stock') || message.includes('quantity') || message.includes('how many') || message.includes('how')) {
+                            return `📦 ${item.name}: ${item.quantity} units in stock`;
+                        }
+                        
+                        // Price
+                        if(message.includes('price') || message.includes('cost') || message.includes('rm') || message.includes('how much')) {
+                            return `💰 ${item.name}: RM ${item.unitPrice.toFixed(2)} per unit`;
+                        }
+                        
+                        // Total value
+                        if(message.includes('total') || message.includes('value')) {
+                            return `💵 ${item.name} total value: RM ${item.totalPrice.toFixed(2)}`;
+                        }
+                        
+                        // General info
+                        return `📊 ${item.name}:\n• Quantity: ${item.quantity} units\n• Unit Price: RM ${item.unitPrice.toFixed(2)}\n• Type: ${item.type}\n• Total Value: RM ${item.totalPrice.toFixed(2)}`;
+                    }
+                }
+
+                // Default responses
+                const responses = [
+                    '🤔 I didn\'t find that item. Try "All items" to see what\'s in inventory.',
+                    '❓ Could you be more specific? Try "Hoodie" or "All items"',
+                    '😅 Try asking "What stock of Blazer?" or "Low stock items"'
+                ];
+
+                return responses[Math.floor(Math.random() * responses.length)];
+            } catch(e) {
+                console.error("Error in getInventoryResponse:", e);
+                return '❌ Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
